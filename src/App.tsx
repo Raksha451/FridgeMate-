@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Camera, Bell, ChefHat, LayoutDashboard, History, Settings, AlertTriangle, X } from 'lucide-react';
+import { Camera, Bell, ChefHat, LayoutDashboard, History, Settings, AlertTriangle, X, Loader2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { FoodItem } from './types';
 import CameraScanner from './components/CameraScanner';
@@ -8,10 +8,8 @@ import RecipePanel from './components/RecipePanel';
 import AddItemModal from './components/AddItemModal';
 
 export default function App() {
-  const [items, setItems] = useState<FoodItem[]>(() => {
-    const saved = localStorage.getItem('fridgemate_inventory');
-    return saved ? JSON.parse(saved) : [];
-  });
+  const [items, setItems] = useState<FoodItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [activeTab, setActiveTab] = useState<'inventory' | 'recipes'>('inventory');
   const [showScanner, setShowScanner] = useState(false);
@@ -20,9 +18,24 @@ export default function App() {
   const [notifications, setNotifications] = useState<string[]>([]);
 
   useEffect(() => {
-    localStorage.setItem('fridgemate_inventory', JSON.stringify(items));
+    fetchInventory();
+  }, []);
+
+  useEffect(() => {
     checkExpirations();
   }, [items]);
+
+  const fetchInventory = async () => {
+    try {
+      const response = await fetch('/api/inventory');
+      const data = await response.json();
+      setItems(data);
+    } catch (error) {
+      console.error("Failed to fetch inventory:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const checkExpirations = () => {
     const today = new Date();
@@ -35,13 +48,13 @@ export default function App() {
 
     if (expiringSoon.length > 0) {
       const names = expiringSoon.map(i => i.name).join(', ');
-      setNotifications([`Expiring soon: ${names}`]);
+      setNotifications([`Attention: The following food expires within 2 days: ${names}`]);
     } else {
       setNotifications([]);
     }
   };
 
-  const addItem = (data: { name: string; category: string; expiryDate: string }) => {
+  const addItem = async (data: { name: string; category: string; expiryDate: string }) => {
     const newItem: FoodItem = {
       id: crypto.randomUUID(),
       name: data.name,
@@ -50,13 +63,37 @@ export default function App() {
       addedDate: new Date().toISOString(),
       quantity: '1'
     };
-    setItems(prev => [newItem, ...prev]);
-    setShowAddModal(false);
-    setDetectedItem(null);
+
+    try {
+      const response = await fetch('/api/inventory', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(newItem),
+      });
+
+      if (response.ok) {
+        setItems(prev => [newItem, ...prev]);
+        setShowAddModal(false);
+        setDetectedItem(null);
+      }
+    } catch (error) {
+      console.error("Failed to add item:", error);
+      alert("Failed to save item to database.");
+    }
   };
 
-  const removeItem = (id: string) => {
-    setItems(prev => prev.filter(item => item.id !== id));
+  const removeItem = async (id: string) => {
+    try {
+      const response = await fetch(`/api/inventory/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (response.ok) {
+        setItems(prev => prev.filter(item => item.id !== id));
+      }
+    } catch (error) {
+      console.error("Failed to remove item:", error);
+    }
   };
 
   const handleDetectedItem = (data: { name: string; category: string; expiryDays: number }) => {
@@ -100,13 +137,26 @@ export default function App() {
           {notifications.length > 0 && (
             <motion.div 
               initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0 }}
+              animate={{ 
+                opacity: 1, 
+                y: 0,
+                scale: [1, 1.01, 1],
+              }}
+              transition={{
+                scale: {
+                  repeat: Infinity,
+                  duration: 2,
+                  ease: "easeInOut"
+                }
+              }}
               exit={{ opacity: 0, y: -20 }}
-              className="mb-8 p-4 bg-orange-50 border border-orange-200 rounded-2xl flex items-center gap-3 text-orange-800 shadow-sm"
+              className="mb-8 p-4 bg-red-50 border border-red-200 rounded-2xl flex items-center gap-3 text-red-800 shadow-lg shadow-red-500/10"
             >
-              <AlertTriangle className="w-5 h-5 text-orange-500 flex-shrink-0" />
-              <p className="text-sm font-medium flex-1">{notifications[0]}</p>
-              <button onClick={() => setNotifications([])} className="p-1 hover:bg-orange-100 rounded-full">
+              <div className="bg-red-500 p-2 rounded-lg">
+                <AlertTriangle className="w-5 h-5 text-white flex-shrink-0" />
+              </div>
+              <p className="text-sm font-bold flex-1">{notifications[0]}</p>
+              <button onClick={() => setNotifications([])} className="p-1 hover:bg-red-100 rounded-full transition-colors">
                 <X className="w-4 h-4" />
               </button>
             </motion.div>
@@ -141,7 +191,12 @@ export default function App() {
 
         {/* Content */}
         <div className="space-y-8">
-          {activeTab === 'inventory' ? (
+          {loading ? (
+            <div className="flex flex-col items-center justify-center py-20">
+              <Loader2 className="w-10 h-10 animate-spin text-emerald-500 mb-4" />
+              <p className="text-zinc-500">Loading your fridge...</p>
+            </div>
+          ) : activeTab === 'inventory' ? (
             <InventoryList 
               items={items} 
               onRemove={removeItem} 

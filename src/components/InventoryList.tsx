@@ -27,8 +27,8 @@ export default function InventoryList({ items, onRemove, onAddManual }: Inventor
     const diff = expiry.getTime() - today.getTime();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
-    if (days < 0) return { label: 'Expired', color: 'bg-red-100 text-red-700 border-red-200' };
-    if (days <= 2) return { label: `Expires in ${days}d`, color: 'bg-orange-100 text-orange-700 border-orange-200' };
+    if (days < 0) return { label: 'Expired', color: 'bg-red-100 text-red-700 border-red-200 animate-pulse' };
+    if (days <= 2) return { label: `Expires in ${days}d`, color: 'bg-red-500 text-white border-red-600 animate-pulse shadow-sm shadow-red-500/20' };
     return { label: `Expires in ${days}d`, color: 'bg-emerald-100 text-emerald-700 border-emerald-200' };
   };
 
