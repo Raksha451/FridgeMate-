@@ -1,0 +1,5 @@
+{
+  "name": "FridgeMate",
+  "description": "Reduce food waste by tracking your fridge inventory, getting expiry alerts, and AI-powered recipe suggestions.",
+  "requestFramePermissions": ["camera"]
+}
