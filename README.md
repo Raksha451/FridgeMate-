@@ -42,8 +42,6 @@ FridgeMate aims to address these challenges by bringing food inventory managemen
 - **🤖 AI Integration** - Explore the use of Google's Gemini models in a practical application.
 - **📱 Interactive User Experience** - Access food management functionality through a digital interface.
 
-*Note: The features described should be checked against the current prototype before being presented as fully implemented.*
-
 ## 🛠️ Tech Stack
 
 - **AI-Assisted Development:** Google AI Studio
