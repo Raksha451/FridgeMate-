@@ -42,6 +42,27 @@ FridgeMate aims to address these challenges by bringing food inventory managemen
 - **🤖 AI Integration** - Explore the use of Google's Gemini models in a practical application.
 - **📱 Interactive User Experience** - Access food management functionality through a digital interface.
 
+## Screenshots
+
+- First screen 
+  <img width="1674" height="896" alt="Screenshot 2026-03-12 210819" src="https://github.com/user-attachments/assets/157148f9-a436-441c-a67e-d33d6436fd0a" />
+
+- Food Inventory and Expiry alert screen
+  <img width="1764" height="909" alt="Screenshot 2026-03-12 210849" src="https://github.com/user-attachments/assets/355cca7c-329b-411a-9f9f-4c2132d56fee" />
+
+- Add new item screen
+  <img width="1538" height="916" alt="Screenshot 2026-03-12 211348" src="https://github.com/user-attachments/assets/2a21f895-d1d5-410b-9952-ac8cfcc6cd9a" />
+
+- AI Recipe suggestion screen
+  <img width="1749" height="911" alt="Screenshot 2026-03-12 210944" src="https://github.com/user-attachments/assets/5702187c-6d38-4aad-a586-ee97d8c40a5c" />
+
+- Food scanning screen
+  <img width="1862" height="913" alt="Screenshot (726)" src="https://github.com/user-attachments/assets/aa8e9d36-e6a1-41a6-a42d-58e3555443c8" />
+
+- AI food detection screen
+  <img width="1864" height="900" alt="Screenshot (727)" src="https://github.com/user-attachments/assets/42cf4e93-1090-4d30-b870-102d860276ee" />
+
+
 ## 🛠️ Tech Stack
 
 - **AI-Assisted Development:** Google AI Studio
